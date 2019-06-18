@@ -1,9 +1,12 @@
 package com.arinspect.randomfacts.activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.espresso.IdlingResource;
+import androidx.test.espresso.idling.CountingIdlingResource;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -37,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean isScrolling = false;
     private ProgressBar progressBar;
     private final String TAG="Error :"+ this.getClass().getCanonicalName();
+    private CountingIdlingResource countingIdlingResource= new CountingIdlingResource("Recycler");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void fetchData() {
+        countingIdlingResource.increment();
         Call<CountryFact> countryFactCall = restClient.getFactsService().getCountryFacts();
         countryFactCall.enqueue(countryFactCallback);
     }
@@ -75,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
             recyclerView.setAdapter(factsAdapter);
             recyclerView.setLayoutManager(layoutManager);
             getSupportActionBar().setTitle(response.body().getTitle());
+            countingIdlingResource.decrement();
+
         }
 
         @Override
@@ -144,6 +151,16 @@ public class MainActivity extends AppCompatActivity {
      */
     public void setAllFacts(List<Fact> allFacts) {
         this.allFacts = allFacts;
+    }
+
+    /**
+     * Created a getter of Idling resource for test environment
+     *
+     */
+    @VisibleForTesting
+    @NonNull
+    public IdlingResource getIdlingResource() {
+        return countingIdlingResource;
     }
 
 }
