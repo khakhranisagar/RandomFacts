@@ -6,6 +6,7 @@ import android.view.View;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.Espresso;
+import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.ViewAssertion;
@@ -61,6 +62,7 @@ public class MainActivityTest {
      */
     @Test
     public void testRecycler(){
+        IdlingRegistry.getInstance().register(mIdlingResource);
         Espresso.registerIdlingResources(mIdlingResource);
         Espresso.onView(ViewMatchers.withId(R.id.rvFacts)).check(RecyclerViewItemCountAssertion.withItemCount(10));
 
