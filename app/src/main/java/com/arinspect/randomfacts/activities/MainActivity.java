@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -23,6 +24,7 @@ import com.arinspect.randomfacts.entities.Fact;
 import com.arinspect.randomfacts.rest.RestClient;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import retrofit2.Call;
@@ -74,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
     private Callback<CountryFact> countryFactCallback = new Callback<CountryFact>() {
         @Override
         public void onResponse(Call<CountryFact> call, Response<CountryFact> response) {
+            hideProgressBar();
             setAllFacts(response.body().getFacts());
             recyclerItems = new ArrayList<>();
             recyclerItems.addAll(allFacts.subList(0, 10));
@@ -141,7 +144,16 @@ public class MainActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                recyclerItems.addAll(allFacts.subList(10, allFacts.size()));
+                HashSet<Fact> facts= new HashSet<>();
+                facts.addAll(allFacts);
+                for (int i =10;i<allFacts.size();i++){
+                    if(recyclerItems.indexOf(allFacts.get(i))==-1){
+                        recyclerItems.add(allFacts.get(i));
+                    }
+                }
+
+//                recyclerItems.addAll(allFacts.subList(10, allFacts.size()));
+
                 factsAdapter.notifyDataSetChanged();
                 hideProgressBar();
             }
@@ -166,4 +178,9 @@ public class MainActivity extends AppCompatActivity {
         return countingIdlingResource;
     }
 
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+    }
 }
