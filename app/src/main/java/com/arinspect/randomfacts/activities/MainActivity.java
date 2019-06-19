@@ -3,6 +3,7 @@ package com.arinspect.randomfacts.activities;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.IdlingResource;
@@ -115,7 +116,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
-            if (isScrolling && recyclerItems.size()< allFacts.size()) {
+            LinearLayoutManager layoutManager = ((LinearLayoutManager)recyclerView.getLayoutManager());
+
+            if (isScrolling && recyclerItems.size()< allFacts.size() && layoutManager.findLastVisibleItemPosition()==9) {
                 showProgressBar();
                 isScrolling = false;
                 loadMoreData();
@@ -138,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                recyclerItems.addAll(allFacts.subList(7, allFacts.size()));
+                recyclerItems.addAll(allFacts.subList(10, allFacts.size()));
                 factsAdapter.notifyDataSetChanged();
                 hideProgressBar();
             }
